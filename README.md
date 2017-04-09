@@ -24,4 +24,4 @@ pip install numpy
 - UNZIP the file and place it in your work Folder
 - Download BOMS from SOS inventory and place in the folder called BOM  (do not change the name of the downloaded file)
 - Download the weekly work order and place it in the work order folder
-- in the terminal run : pyton generate_raw_materials.py
+- in the terminal run : python generate_raw_materials.py
