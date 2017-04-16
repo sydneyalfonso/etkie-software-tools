@@ -28,8 +28,7 @@ def nice_import(lib):
 
 nice_import("pandas")
 import pandas as pd
-nice_import("pylatex")
-import pylatex
+
 
 
 def get_last_file_date(path):
