@@ -1,5 +1,5 @@
-import pandas as pd
 import os
+import importlib
 import sys
 import traceback
 
@@ -17,6 +17,19 @@ def error(str):
     print traceback.print_exc()
     print "##########################"
     sys.exit()
+
+
+def nice_import(lib):
+    try:
+        importlib.import_module(lib)
+    except:
+        error("You need to install another library, type: pip install {}".format(lib))
+
+
+nice_import("pandas")
+import pandas as pd
+nice_import("pylatex")
+import pylatex
 
 
 def get_last_file_date(path):
