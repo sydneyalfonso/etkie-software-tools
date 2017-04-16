@@ -1,5 +1,7 @@
 import pandas as pd
 import os
+import sys
+import traceback
 
 path_wo = 'work_orders'
 root_wo = 'work_orders/work_orders_'
@@ -7,18 +9,31 @@ path_bom = 'bom'
 root_bom = 'bom/boms_'
 
 
+def error(str):
+    print "##########################"
+    print "There was an error, don't panick !"
+    print "Here is some info : ", str
+    print "If this does not make any sense copy and paste everything between the lines ### and send it to clem.jambou@gmail.com"
+    print traceback.print_exc()
+    print "##########################"
+    sys.exit()
+
+
 def get_last_file_date(path):
     l = os.listdir(path)
     dates = sorted([name[-12:-4] for name in l if name[-4:] == '.csv'])
-    return dates[-1]
+    try:
+        return dates[-1]
+    except:
+        error("Files for the work order of the BOM were not found ! Make sure that a file namedwork_orders_YYYYMMDD ( where YYYY is the year, MM is the month and DD is the day is in the work_orders folder, similarly a file like boms_20170409.csv is in the bom folder. Tips : Use the default filename used when downloading from SOSInventory")
 
 
 def load_last_file(path, root):
     """load the last file (alphabetically) of a folder in a pandas table,
     @input path to the folder
-    @input root : root name of the file"""  
+    @input root : root name of the file"""
     d = get_last_file_date(path)
-    file_path =  root + str(d) + '.csv'
+    file_path = root + str(d) + '.csv'
     print "loading file : ", file_path
     return pd.read_csv(file_path)
 
@@ -26,8 +41,8 @@ def load_last_file(path, root):
 def generate_wo_boms(wo, bom):
     work_orders_boms = {}
     work_order_numbers = list(set(wo.WorkOrderNumber))
-    for w in work_order_numbers:    
-        wo_temp = wo[wo.WorkOrderNumber==w].copy()
+    for w in work_order_numbers:
+        wo_temp = wo[wo.WorkOrderNumber == w].copy()
         bom_items = []
         for id_r, row in wo_temp.iterrows():
             name = row['Item']
@@ -49,7 +64,7 @@ def file_output(list_of_bom, wo):
             f.write('<h2> Raw materials </h2>'.format(w))
             f.write(df.to_html())
             f.write('<h2> Summary </h2>')
-            f.write(wo[wo.WorkOrderNumber==w][['Date', 'Item', 'Quantity', 'Memo']].fillna('__').groupby('Item').first().to_html())
+            f.write(wo[wo.WorkOrderNumber == w][['Date', 'Item', 'Quantity', 'Memo']].fillna('__').groupby('Item').first().to_html())
     print "file saved"
 
 
