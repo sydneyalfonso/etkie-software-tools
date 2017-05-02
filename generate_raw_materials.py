@@ -28,8 +28,6 @@ def nice_import(lib):
 
 nice_import("pandas")
 import pandas as pd
-nice_import("pylatex")
-import pylatex
 
 
 def get_last_file_date(path):
@@ -68,17 +66,24 @@ def generate_wo_boms(wo, bom):
     return work_orders_boms
 
 
+def write_file(f, w, wo, df):
+    f.write('<h1> Work Order {} </h1>'.format(w))
+    f.write('<h2> Artisan : {}  </h2>'.format(w[:2]))
+    f.write('<h2> Raw materials </h2>'.format(w))
+    f.write(df.to_html())
+    f.write('<h2> Summary </h2>')
+    f.write(wo[wo.WorkOrderNumber == w][['Date', 'Item', 'Quantity', 'Memo']].fillna('__').groupby('Item').first().to_html())
+
+
 def file_output(list_of_bom, wo):
 
     with open('artisans_material_pull_sheet.html', 'w') as f:
         for w, df in list_of_bom.iteritems():
-            f.write('<h1> Work Order {} </h1>'.format(w))
-            f.write('<h2> Artisan : {}  </h2>'.format(w[:2]))
-            f.write('<h2> Raw materials </h2>'.format(w))
-            f.write(df.to_html())
-            f.write('<h2> Summary </h2>')
-            f.write(wo[wo.WorkOrderNumber == w][['Date', 'Item', 'Quantity', 'Memo']].fillna('__').groupby('Item').first().to_html())
-    print "file saved"
+            write_file(f, w, wo, df)           
+            with open(w + '.html', 'w') as f2:
+                write_file(f2, w, wo, df)
+
+    print "files saved"
 
 
 def generate_raw_materials():
