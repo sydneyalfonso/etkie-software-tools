@@ -115,7 +115,7 @@ def write_file(f, w, wo, df):
     f.write('<h2> Artisan : {}  </h2>'.format(w.split("_")[-1]))
     f.write('<h3> Raw materials </h2>'.format(w))
     f.write(df.to_html())
-    f.write('<h3> Summary </h2>')
+    f.write('<h3> Summary, Checked by __________ </h3>')
     df_summary = wo[wo.WorkOrderNumber == w][['Date', 'Item', 'Quantity']].fillna('__').groupby('Item').first().copy()
     df_summary['Received ? '] = '' 
     df_summary['Quality Note'] = '' 
