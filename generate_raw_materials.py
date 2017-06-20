@@ -2,6 +2,7 @@ import os
 import importlib
 import sys
 import traceback
+import math
 
 path_wo = 'work_orders'
 root_wo = 'work_orders/work_orders_'
@@ -59,20 +60,71 @@ def generate_wo_boms(wo, bom):
             name = row['Item']
             qt = row['Quantity']
             bom_item = bom[bom.Assembly == name].copy()
-            bom_item = bom_item[['Component', 'Quantity']]
-            bom_item.Quantity *= qt
+            bom_item['Exact Quantity'] = bom_item['Quantity']
+            bom_item = bom_item[['Component', 'Exact Quantity']].copy()
+            bom_item['Exact Quantity'] *= qt
+            bom_item['Recommended'] = bom_item['Exact Quantity']
+
             bom_items.append(bom_item)
-        work_orders_boms[w] = pd.concat(bom_items).groupby('Component').sum()
+        
+        # concat by component
+        wob = pd.concat(bom_items).groupby('Component').sum()
+
+        ind_str = pd.Series(wob.index).astype(str)
+        bool = ind_str.str.contains("Leather|Thread|Glue|Labor")
+        wob.loc[wob.index[~bool], 'Recommended'] *= 1.05
+        wob.Recommended = wob.Recommended.map(math.ceil)
+        wob.Recommended.astype(int)
+
+        work_orders_boms[w] = wob
+        
     return work_orders_boms
 
 
 def write_file(f, w, wo, df):
+    f.write("""
+    <!DOCTYPE html>
+    <html>
+    <style>
+    tr:nth-child(even) {background-color: #f2f2f2}
+
+    td, th {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    tr:nth-child(even){background-color: #f2f2f2;}
+
+    tr:hover {background-color: #ddd;}
+
+    customers th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    </style>
+    <body>
+    """)
+    
     f.write('<h1> Work Order {} </h1>'.format(w))
-    f.write('<h2> Artisan : {}  </h2>'.format(w[:2]))
-    f.write('<h2> Raw materials </h2>'.format(w))
+    f.write('<h2> Raw material &#9633 | Finished Goods &#9633 </h2>')
+
+    f.write('<h2> Artisan : {}  </h2>'.format(w.split("_")[-1]))
+    f.write('<h3> Raw materials </h2>'.format(w))
     f.write(df.to_html())
-    f.write('<h2> Summary </h2>')
-    f.write(wo[wo.WorkOrderNumber == w][['Date', 'Item', 'Quantity', 'Memo']].fillna('__').groupby('Item').first().to_html())
+    f.write('<h3> Summary, Checked by __________ </h3>')
+    df_summary = wo[wo.WorkOrderNumber == w][['Date', 'Item', 'Quantity']].fillna('__').groupby('Item').first().copy()
+    df_summary['Received ? '] = '' 
+    df_summary['Quality Note'] = '' 
+    df_summary.Date = pd.to_datetime(df_summary.Date).dt.strftime("%b %d %Y")
+    
+    f.write(df_summary.to_html())
+
+    f.write(""" </body> 
+    </html> """)
 
 
 def file_output(list_of_bom, wo):
