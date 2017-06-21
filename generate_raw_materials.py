@@ -4,6 +4,7 @@ import sys
 import traceback
 import math
 
+
 path_wo = 'work_orders'
 root_wo = 'work_orders/work_orders_'
 path_bom = 'bom'
@@ -81,8 +82,9 @@ def generate_wo_boms(wo, bom):
     return work_orders_boms
 
 
-def write_file(f, w, wo, df):
-    f.write("""
+def start_html(f):
+
+  f.write("""
     <!DOCTYPE html>
     <html>
     <style>
@@ -108,7 +110,17 @@ def write_file(f, w, wo, df):
     </style>
     <body>
     """)
-    
+
+
+def end_html(f):
+
+    f.write(""" </body> 
+    </html> """)
+
+
+def write_file(f, w, wo, df):
+    start_html(f)
+   
     f.write('<h1> Work Order {} </h1>'.format(w))
     f.write('<h2> Raw material &#9633 | Finished Goods &#9633 </h2>')
 
@@ -122,9 +134,7 @@ def write_file(f, w, wo, df):
     df_summary.Date = pd.to_datetime(df_summary.Date).dt.strftime("%b %d %Y")
     
     f.write(df_summary.to_html())
-
-    f.write(""" </body> 
-    </html> """)
+    end_html(f)
 
 
 def file_output(list_of_bom, wo):
@@ -137,6 +147,21 @@ def file_output(list_of_bom, wo):
 
     print "files saved"
 
+
+def slugify(s):
+    """ make string nice for filename"""
+    return "".join(x for x in s if x.isalnum())
+
+
+def generate_all_boms_html():
+    bom = load_last_file(path_bom, root_bom)
+    bom = bom[['Assembly', 'Component', 'Quantity']]
+    bom = bom.fillna(method='ffill')
+    for ass in set(list(bom.Assembly)):
+        with open('boms_html/{}.html'.format(slugify(ass)), 'w') as f:
+            start_html(f)
+            f.write("<h1>Materials for: {} </h1>".format(ass))
+            f.write(bom[bom.Assembly == ass].to_html())
 
 def generate_raw_materials():
     wo = load_last_file(path_wo, root_wo)
