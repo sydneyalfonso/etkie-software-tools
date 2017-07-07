@@ -1,8 +1,12 @@
+#!/usr/bin/env python
+
 import os
 import importlib
 import sys
 import traceback
 import math
+import easygui
+import random
 
 path_wo = 'work_orders'
 root_wo = 'work_orders/work_orders_'
@@ -11,13 +15,13 @@ root_bom = 'bom/boms_'
 
 
 def error(str):
-    print "##########################"
-    print "There was an error, don't panick !"
-    print "Here is some info : ", str
-    print "If this does not make any sense copy and paste everything between the lines ### and send it to clem.jambou@gmail.com"
-    print traceback.print_exc()
-    print "##########################"
-    sys.exit()
+    error = "There was an error, don't panick ! \n"
+    error +=  "Here is some info : " + str
+    error += "\n"
+    error +="If this does not make any sense copy and paste everything  send it to clem.jambou@gmail.com \n"
+    error += traceback.format_exc()
+    easygui.msgbox(error, title="Oh nooooooo")
+
 
 
 def nice_import(lib):
@@ -47,7 +51,11 @@ def load_last_file(path, root):
     d = get_last_file_date(path)
     file_path = root + str(d) + '.csv'
     print "loading file : ", file_path
-    return pd.read_csv(file_path)
+    try:
+        return pd.read_csv(file_path)
+    except:
+        error("Files for the work order of the BOM were not found ! Make sure that a file namedwork_orders_YYYYMMDD ( where YYYY is the year, MM is the month and DD is the day is in the work_orders folder, similarly a file like boms_20170409.csv is in the bom folder. Tips : Use the default filename used when downloading from SOSInventory")
+        
 
 
 def generate_wo_boms(wo, bom):
@@ -128,11 +136,19 @@ def write_file(f, w, wo, df):
 
 
 def file_output(list_of_bom, wo):
+    dirpath = "artisan_invoices"
+    if not os.path.exists(dirpath):
+	os.makedirs(dirpath)
+    w = list_of_bom.keys()[0]
+    dirpath += "/{}".format(w[:6])
+    if not os.path.exists(dirpath):
+	os.makedirs(dirpath)
 
-    with open('artisans_material_pull_sheet.html', 'w') as f:
+    with open(dirpath + '/' + 'artisans_material_pull_sheet.html', 'w') as f:
+
         for w, df in list_of_bom.iteritems():
             write_file(f, w, wo, df)           
-            with open(w + '.html', 'w') as f2:
+            with open(dirpath + '/' + w + '.html', 'w') as f2:
                 write_file(f2, w, wo, df)
 
     print "files saved"
@@ -146,6 +162,8 @@ def generate_raw_materials():
     bom = bom.fillna(method='ffill')
     list_of_bom = generate_wo_boms(wo, bom)
     file_output(list_of_bom, wo)
+    easygui.msgbox(random.choice(
+	["Well done ! everything went well", "Awesome job !", "Kerry, is that you ? you dit it !!!", "ohhhhhhh yeeaaaah"]) + " \n " + "You can check the results in the artisan_invoices folder !"  , title="Sucess")
 
 if __name__ == "__main__":
     generate_raw_materials()
