@@ -2,6 +2,5 @@ pandas
 reportlab==2.7
 weasyprint
 Jinja2
-random
 easygui
 
