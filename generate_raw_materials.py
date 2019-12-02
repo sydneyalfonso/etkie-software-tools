@@ -157,7 +157,7 @@ def file_output(list_of_bom, wo):
 def generate_raw_materials():
     wo = load_last_file(path_wo, root_wo)
     bom = load_last_file(path_bom, root_bom)
-    wo = wo[['WorkOrderNumber', 'Date', 'Item', 'Quantity', 'Memo']]
+    wo = wo[['WorkOrderNumber', 'Date', 'Item', 'Quantity']]
     bom = bom[['Assembly', 'Component', 'Quantity']]
     bom = bom.fillna(method='ffill')
     list_of_bom = generate_wo_boms(wo, bom)
