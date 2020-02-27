@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+""" Main Python file with all the code """
+
 
 import os
 import importlib
