@@ -1,5 +1,5 @@
 # ekie-software-tools- 
-Tools around Shopify and SOS inventory
+Tools around Shopify and SOS inventory used to simplify generation of list of materials for each artisan to take on the work orders.
 
 
 ## Getting started 
