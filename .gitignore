@@ -1,3 +1,5 @@
 tests/*
 *.jpg
 *.html
+linesheets/output/
+linesheets/pdfs
