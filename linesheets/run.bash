@@ -1,5 +1,5 @@
 #!/bin/bash
-python linesheet.py 
+python3 linesheet.py 
 
 cd output
 for filename in *.tex; do
