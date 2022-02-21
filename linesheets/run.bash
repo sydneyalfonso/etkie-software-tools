@@ -15,3 +15,4 @@ rm output/*.aux
 
 mv pdfs/Blush.pdf . 
 pdftk front.pdf Blush.pdf pdfs/*.pdf output linesheet.pdf
+gs -sDEVICE=pdfwrite -dPDFSETTINGS=/ebook -q -o linesheet_small.pdf linesheet.pdf
