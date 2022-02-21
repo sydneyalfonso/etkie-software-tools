@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+#%%
 from jinja2 import Template
 import pandas as pd
 import wget
@@ -33,14 +34,18 @@ def get_image_template(image_file, caption1, caption2):
   """
 
 
-
+#%%
 def get_photo_files():
   # download all files
   for i, row in df.iterrows():
     print(f"Download for photos/{row['Title']}.jpg")
+    print(f"{row['Image Src']}")
     wget.download(url=row['Image Src'], out=f"photos/{row['Title']}.jpg")
 
 
+#%%
+#get_photo_files()
+#%%
 def wholesale_price(retail):
   if retail == 225 :
     return "102"
@@ -96,3 +101,9 @@ templates = [(tag, get_linesheet_pages(df, tag)) for tag in tags]
 for tag, t in templates:
   with open(f'output/{tag}.tex', 'w') as f:
     f.write(t)
+
+# %%
+
+# %%
+
+# %%
