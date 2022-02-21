@@ -37,24 +37,25 @@ def get_image_template(image_file, caption1, caption2):
 def get_photo_files():
   # download all files
   for i, row in df.iterrows():
+    print(f"Download for photos/{row['Title']}.jpg")
     wget.download(url=row['Image Src'], out=f"photos/{row['Title']}.jpg")
 
 
 def wholesale_price(retail):
-  if retail == 218 :
-    return "100"
-  elif retail == 228:
-    return "103"
-  elif retail == 248:
-    return "112"
-  elif retail == 258:
-    return "115"
-  elif retail == 278:
-    return "127"
-  elif retail == 288:
-    return "130"
+  if retail == 225 :
+    return "102"
+  elif retail == 238:
+    return "106"
+  elif retail == 255:
+    return "116"
+  elif retail == 268:
+    return "121"
+  elif retail == 285:
+    return "129"
+  elif retail == 298:
+    return "133"
   else:
-    return "262"
+    return "265"
 
 df['wholesale'] = df['Variant Price'].map(wholesale_price) 
 df['file'] = '"photos/' + df['Title'] + '"'
