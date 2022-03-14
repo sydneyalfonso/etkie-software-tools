@@ -7,7 +7,6 @@ import importlib
 import sys
 import traceback
 import math
-import easygui
 import random
 
 path_wo = 'work_orders'
@@ -22,7 +21,8 @@ def error(str):
     error += "\n"
     error +="If this does not make any sense copy and paste everything  send it to clem.jambou@gmail.com \n"
     error += traceback.format_exc()
-    easygui.msgbox(error, title="Oh nooooooo")
+    #easygui.msgbox(error, title="Oh nooooooo")
+    print(error)
 
 
 
@@ -52,7 +52,7 @@ def load_last_file(path, root):
     @input root : root name of the file"""
     d = get_last_file_date(path)
     file_path = root + str(d) + '.csv'
-    print "loading file : ", file_path
+    print("loading file : ", file_path)
     try:
         return pd.read_csv(file_path)
     except:
@@ -140,20 +140,20 @@ def write_file(f, w, wo, df):
 def file_output(list_of_bom, wo):
     dirpath = "artisan_invoices"
     if not os.path.exists(dirpath):
-	os.makedirs(dirpath)
-    w = list_of_bom.keys()[0]
+	    os.makedirs(dirpath)
+    w = list(list_of_bom.keys())[0]
     dirpath += "/{}".format(w[:6])
     if not os.path.exists(dirpath):
-	os.makedirs(dirpath)
+	    os.makedirs(dirpath)
 
     with open(dirpath + '/' + 'artisans_material_pull_sheet.html', 'w') as f:
 
-        for w, df in list_of_bom.iteritems():
+        for w, df in list_of_bom.items():
             write_file(f, w, wo, df)           
             with open(dirpath + '/' + w + '.html', 'w') as f2:
                 write_file(f2, w, wo, df)
 
-    print "files saved"
+    print("files saved")
 
 
 def generate_raw_materials():
@@ -164,8 +164,8 @@ def generate_raw_materials():
     bom = bom.fillna(method='ffill')
     list_of_bom = generate_wo_boms(wo, bom)
     file_output(list_of_bom, wo)
-    easygui.msgbox(random.choice(
-	["Well done ! everything went well", "Awesome job !", "Kerry, is that you ? you dit it !!!", "ohhhhhhh yeeaaaah"]) + " \n " + "You can check the results in the artisan_invoices folder !"  , title="Sucess")
+    #easygui.msgbox(random.choice(
+    #	["Well done ! everything went well", "Awesome job !", "Kerry, is that you ? you dit it !!!", "ohhhhhhh yeeaaaah"]) + " \n " + "You can check the results in the artisan_invoices folder !"  , title="Sucess")
 
 if __name__ == "__main__":
     generate_raw_materials()
