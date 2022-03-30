@@ -82,9 +82,11 @@ def generate_wo_boms(wo, bom):
 
         ind_str = pd.Series(wob.index).astype(str)
         bool = ind_str.str.contains("Leather|Thread|Glue|Labor")
-        wob.loc[wob.index[~bool], 'Recommended'] *= 1.05
-        wob.Recommended = wob.Recommended.map(math.ceil)
+        wob.loc[wob.index[~bool], 'Recommended'] *= 1.25
+        wob.Recommended = 5 * ((wob.Recommended)/5.0).map(math.ceil)
         wob.Recommended.astype(int)
+
+        wob.loc[wob.index.str.contains("Leather"), 'Recommended'] = wob.loc[wob.index.str.contains("Leather"), 'Exact Quantity'] 
 
         work_orders_boms[w] = wob
         
@@ -126,7 +128,8 @@ def write_file(f, w, wo, df):
     f.write('<h3> Raw materials </h2>'.format(w))
     f.write(df.to_html())
     f.write('<h3> Summary, Checked by __________ </h3>')
-    df_summary = wo[wo.WorkOrderNumber == w][['Date', 'Item', 'Quantity']].fillna('__').groupby('Item').first().copy()
+    print(wo.columns)
+    df_summary = wo[wo.WorkOrderNumber == w][['Date', 'Item', 'Quantity', 'Instructions']].fillna('__').groupby(['Item', 'Instructions']).first().copy()
     df_summary['Received ? '] = '' 
     df_summary['Quality Note'] = '' 
     df_summary.Date = pd.to_datetime(df_summary.Date).dt.strftime("%b %d %Y")
@@ -159,7 +162,7 @@ def file_output(list_of_bom, wo):
 def generate_raw_materials():
     wo = load_last_file(path_wo, root_wo)
     bom = load_last_file(path_bom, root_bom)
-    wo = wo[['WorkOrderNumber', 'Date', 'Item', 'Quantity']]
+    wo = wo[['WorkOrderNumber', 'Date', 'Item', 'Quantity', 'Instructions']]
     bom = bom[['Assembly', 'Component', 'Quantity']]
     bom = bom.fillna(method='ffill')
     list_of_bom = generate_wo_boms(wo, bom)
