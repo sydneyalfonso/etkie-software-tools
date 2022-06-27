@@ -1,5 +1,5 @@
 pandas
-reportlab==2.7
+reportlab==3.5.55
 weasyprint
 Jinja2
 easygui
