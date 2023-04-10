@@ -13,6 +13,7 @@ mv output/*.pdf pdfs/
 rm output/*.log 
 rm output/*.aux
 
-mv pdfs/Blush.pdf . 
-pdftk front.pdf Blush.pdf pdfs/*.pdf output linesheet.pdf
+mv pdfs/Orange\ Blossom.pdf OrangeBlossom.pdf
+#pdftk front.pdf Golden.pdf pdfs/*.pdf output linesheet.pdf
+gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=linesheet.pdf front.pdf OrangeBlossom.pdf pdfs/*.pdf
 gs -sDEVICE=pdfwrite -dPDFSETTINGS=/ebook -q -o linesheet_small.pdf linesheet.pdf
